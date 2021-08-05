@@ -1,5 +1,6 @@
 # Directory Ignores #
 /target/
+.mongo
 
 # File Ignores #
 **/*.rs.bk

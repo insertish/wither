@@ -1,11 +1,10 @@
 error: malformed attribute
-
-  = help: expected literal
-
  --> $DIR/model-read-concern-invalid-syntax.rs:5:1
   |
 5 | #[model(read_concern=ReadConcern::Majority)]
   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: expected literal
 
 error[E0599]: no function or associated item named `read_concern` found for struct `DerivedModel` in the current scope
   --> $DIR/model-read-concern-invalid-syntax.rs:12:27

@@ -1,11 +1,10 @@
 error: malformed attribute
-
-  = help: expected literal
-
  --> $DIR/model-write-concern-ack-invalid.rs:5:1
   |
 5 | #[model(write_concern(w=WriteConcern::Majority, w_timeout=10, journal=false))]
   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: expected literal
 
 error[E0599]: no function or associated item named `write_concern` found for struct `DerivedModel` in the current scope
   --> $DIR/model-write-concern-ack-invalid.rs:12:27
