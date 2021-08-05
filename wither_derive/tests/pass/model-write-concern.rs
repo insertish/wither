@@ -5,42 +5,42 @@ use wither::Model;
 #[model(write_concern(w="majority", w_timeout=10, journal=true))]
 struct Model0 {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Model)]
 #[model(write_concern(w(nodes=3), w_timeout=0, journal=false))]
 struct Model1 {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Model)]
 #[model(write_concern(w(custom="custom")))]
 struct Model2 {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Model)]
 #[model(write_concern(w_timeout=999))]
 struct Model3 {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Model)]
 #[model(write_concern(journal=true))]
 struct Model4 {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Model)]
 #[model(write_concern())]
 struct Model5 {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 fn main() {

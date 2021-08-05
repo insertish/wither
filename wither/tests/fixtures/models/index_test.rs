@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use wither::bson::doc;
-use wither::bson::oid::ObjectId;
+use String;
 use wither::prelude::*;
 
 /// Index V1 has a basic index
@@ -9,7 +9,7 @@ use wither::prelude::*;
 #[model(index(keys = r#"doc!{"i": 1}"#))]
 pub struct IndexTestV1 {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub id: Option<String>,
 
     pub i: String,
 }
@@ -20,7 +20,7 @@ pub struct IndexTestV1 {
 #[model(index(keys = r#"doc!{"i": -1}"#))]
 pub struct IndexTestV2 {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub id: Option<String>,
 
     pub i: String,
 }
@@ -30,7 +30,7 @@ pub struct IndexTestV2 {
 #[model(index(keys = r#"doc!{"i": -1}"#, options = r#"doc!{"unique": true}"#))]
 pub struct IndexTestV3 {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub id: Option<String>,
 
     pub i: String,
 }
@@ -41,7 +41,7 @@ pub struct IndexTestV3 {
 #[model(index(keys = r#"doc!{"i": -1}"#, options = r#"doc!{"unique": true, "background": true}"#))]
 pub struct IndexTestV4 {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub id: Option<String>,
 
     pub i: String,
 }
@@ -52,7 +52,7 @@ pub struct IndexTestV4 {
 #[model(index(keys = r#"doc!{"i": -1}"#, options = r#"doc!{"unique": true, "background": true}"#))]
 pub struct IndexTestV5 {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub id: Option<String>,
 
     pub i: String,
 }
@@ -62,7 +62,7 @@ pub struct IndexTestV5 {
 #[model(collection_name = "indexTest")]
 pub struct IndexTestV6 {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub id: Option<String>,
 
     pub i: String,
 }

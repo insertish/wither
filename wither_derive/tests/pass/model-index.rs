@@ -10,7 +10,7 @@ use wither::Model;
 )]
 struct DerivedModel {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 fn main() {

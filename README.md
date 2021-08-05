@@ -37,7 +37,7 @@ To get started, simply derive `Model` on your struct along with a few other serd
 use futures::stream::StreamExt;
 use serde::{Serialize, Deserialize};
 use wither::{prelude::*, Result};
-use wither::bson::{doc, oid::ObjectId};
+use wither::bson::{doc};
 use wither::mongodb::Client;
 
 // Define a model. Simple as deriving a few traits.
@@ -46,7 +46,7 @@ use wither::mongodb::Client;
 struct User {
     /// The ID of the model.
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub id: Option<String>,
     /// The user's email address.
     pub email: String,
 }

@@ -5,35 +5,35 @@ use wither::Model;
 #[model(read_concern="local")]
 struct Model0 {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Model)]
 #[model(read_concern="majority")]
 struct Model1 {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Model)]
 #[model(read_concern="linearizable")]
 struct Model2 {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Model)]
 #[model(read_concern="available")]
 struct Model3 {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 #[derive(Default, Serialize, Deserialize, Model)]
 #[model(read_concern(custom="custom-concern"))]
 struct Model4 {
     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-    pub id: Option<wither::bson::oid::ObjectId>,
+    pub id: Option<String>,
 }
 
 fn main() {

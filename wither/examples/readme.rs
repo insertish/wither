@@ -1,6 +1,6 @@
 use futures::stream::StreamExt;
 use serde::{Deserialize, Serialize};
-use wither::bson::{doc, oid::ObjectId};
+use wither::bson::{doc};
 use wither::mongodb::Client;
 use wither::{prelude::*, Result};
 
@@ -10,7 +10,7 @@ use wither::{prelude::*, Result};
 struct User {
     /// The ID of the model.
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub id: Option<String>,
     /// The user's email address.
     pub email: String,
 }

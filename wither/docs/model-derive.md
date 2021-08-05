@@ -6,7 +6,7 @@ All `Model` attributes are declared inside of `model(...)` attributes as such: `
 Deriving `Model` for your struct is straightforward.
 
 - Ensure that your struct has at least the following derivations: `#[derive(Model, Serialize, Deserialize)]`.
-- Ensure that you have a field named `id`, of type `Option<ObjectId>`, with at least the following serde attributes: `#[serde(rename="_id", skip_serializing_if="Option::is_none")]`.
+- Ensure that you have a field named `id`, of type `Option<String>`, with at least the following serde attributes: `#[serde(rename="_id", skip_serializing_if="Option::is_none")]`.
 
 For now, it seems logical to disallow customization of the PK. An argument could be made for allowing full customization of the PK for a MongoDB collection, but there really is no end-all reasoning for this argument which I am aware of. If you need to treat a different field as PK, then just add the needed index to the field, and you are good to go. More on indexing soon.
 
@@ -43,7 +43,7 @@ Index derivations have been GREATLY simplified, and future-proofed, as of `withe
 ```rust ,no_run
 # use serde::{Serialize, Deserialize};
 # use wither::{prelude::*, Result};
-# use wither::bson::{doc, oid::ObjectId};
+# use wither::bson::{doc};
 # #[derive(Serialize, Deserialize, Model)]
 #[model(
     index(keys=r#"doc!{"id": 1}"#),
@@ -52,7 +52,7 @@ Index derivations have been GREATLY simplified, and future-proofed, as of `withe
 )]
 struct MyModel {
 #    #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-#    pub id: Option<ObjectId>,
+#    pub id: Option<String>,
 # }
 ```
 

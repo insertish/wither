@@ -18,8 +18,8 @@ pub enum WitherError {
     /// A BSON serialization error.
     #[error("{0}")]
     BsonSer(#[from] mongodb::bson::ser::Error),
-    /// An error indicating that an ObjectId is required for the requested operation.
-    #[error("Model must have an ObjectId for this operation.")]
+    /// An error indicating that an  is required for the requested operation.
+    #[error("Model must have an  for this operation.")]
     ModelIdRequiredForOperation,
     /// An error indicating that a model was serialized to a BSON variant other than a document.
     #[error("Serializing model to BSON failed to produce a Bson::Document, got type {0:?}")]
@@ -27,9 +27,9 @@ pub enum WitherError {
     /// An error indicating that the server failed to return a document after an update.
     #[error("Server failed to return the updated document. Update may have failed.")]
     ServerFailedToReturnUpdatedDoc,
-    /// An error indicating that the server failed to return an ObjectId.
-    #[error("Server failed to return ObjectId of updated document.")]
-    ServerFailedToReturnObjectId,
+    /// An error indicating that the server failed to return an .
+    #[error("Server failed to return  of updated document.")]
+    ServerFailedToReturn,
     /// An error indicating that one of `$set` or `$unset` must be specified for a migration.
     #[error("One of '$set' or '$unset' must be specified.")]
     MigrationSetOrUnsetRequired,

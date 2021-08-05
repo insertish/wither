@@ -7,13 +7,13 @@ Migrations are controlled by implementing the [Migrating](./trait.Migrating.html
 # use futures::stream::StreamExt;
 # use serde::{Serialize, Deserialize};
 # use wither::{prelude::*, Result};
-# use wither::bson::{doc, oid::ObjectId};
+# use wither::bson::{doc};
 # use wither::mongodb::Client;
 #
 # #[derive(Debug, Model, Serialize, Deserialize)]
 # struct User {
 #     #[serde(rename="_id", skip_serializing_if="Option::is_none")]
-#     pub id: Option<ObjectId>,
+#     pub id: Option<String>,
 # }
 #
 impl Migrating for User {

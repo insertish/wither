@@ -3,7 +3,7 @@ use wither::Model;
 
 #[derive(Serialize, Deserialize, Model)]
 struct BadModel {
-    id: Option<wither::bson::oid::ObjectId>,
+    id: Option<String>,
 }
 
 fn main() {}

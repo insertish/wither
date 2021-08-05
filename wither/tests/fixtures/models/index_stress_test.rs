@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use wither::bson::doc;
-use wither::bson::oid::ObjectId;
+use String;
 use wither::prelude::*;
 
 #[derive(Model, Serialize, Deserialize, Debug, Clone, Eq, PartialEq)]
@@ -71,7 +71,7 @@ use wither::prelude::*;
 /// This model is just to stress-test the collection, it has the maximum number of indexes (64 so 63 custom indexes)
 pub struct IndexStressTest {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub id: Option<String>,
 
     pub i_0: String,
     pub i_1: String,

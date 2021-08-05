@@ -8,7 +8,7 @@ use chrono::{self, TimeZone};
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use wither::bson::doc;
-use wither::bson::oid::ObjectId;
+use String;
 use wither::mongodb::{Client, Database};
 use wither::prelude::*;
 
@@ -30,7 +30,7 @@ lazy_static! {
 pub struct User {
     /// The user's unique ID.
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub id: Option<String>,
 
     /// The user's unique email.
     pub email: String,
@@ -63,7 +63,7 @@ impl Migrating for User {
 pub struct UserModelBadMigrations {
     /// The user's unique ID.
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<ObjectId>,
+    pub id: Option<String>,
 
     /// The user's unique email.
     pub email: String,

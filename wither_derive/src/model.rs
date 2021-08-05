@@ -84,12 +84,12 @@ impl<'a> MetaModel<'a> {
                 const COLLECTION_NAME: &'static str = #collection_name;
 
                 /// Get a cloned copy of this instance's ID.
-                fn id(&self) -> ::std::option::Option<wither::bson::oid::ObjectId> {
+                fn id(&self) -> ::std::option::Option<String> {
                     self.id.clone()
                 }
 
                 /// Set this instance's ID.
-                fn set_id(&mut self, oid: wither::bson::oid::ObjectId) {
+                fn set_id(&mut self, oid: String) {
                     self.id = Some(oid);
                 }
 
@@ -133,12 +133,12 @@ impl<'a> MetaModel<'a> {
     //             const COLLECTION_NAME: &'static str = #collection_name;
 
     //             /// Get a cloned copy of this instance's ID.
-    //             fn id(&self) -> ::std::option::Option<wither::bson::oid::ObjectId> {
+    //             fn id(&self) -> ::std::option::Option<String> {
     //                 self.id.clone()
     //             }
 
     //             /// Set this instance's ID.
-    //             fn set_id(&mut self, oid: wither::bson::oid::ObjectId) {
+    //             fn set_id(&mut self, oid: String) {
     //                 self.id = Some(oid);
     //             }
 
@@ -330,7 +330,7 @@ impl<'a> MetaModel<'a> {
                 Some(ident) => ident == "id",
                 None => false,
             })
-            .unwrap_or_else(|| abort!(self.ident, "wither models must have a field `id` of type `Option<bson::oid::ObjectId>`"));
+            .unwrap_or_else(|| abort!(self.ident, "wither models must have a field `id` of type `Option<String>`"));
         // Ensure the ID field has needed serde attributes, unless this check is disabled.
         if self.skip_serde_checks.is_none() {
             self.check_id_serde_attrs(id_field);
