@@ -35,7 +35,7 @@ const MONGO_DIFF_INDEX_BLACKLIST: [&str; 3] = ["v", "ns", "key"];
 #[async_trait]
 pub trait Model
 where
-    Self: Serialize + DeserializeOwned,
+    Self: Serialize + DeserializeOwned + Unpin + Send + Sync,
 {
     /// The name of the collection where this model's data is stored.
     const COLLECTION_NAME: &'static str;
@@ -79,7 +79,7 @@ where
     ///
     /// This method uses the model's `selection_criteria`, `read_concern` & `write_concern` when
     /// constructing the collection handle.
-    fn collection(db: &Database) -> Collection {
+    fn collection(db: &Database) -> Collection<Self> {
         db.collection_with_options(
             Self::COLLECTION_NAME,
             options::CollectionOptions::builder()
@@ -105,11 +105,7 @@ where
         F: Into<Option<Document>> + Send,
         O: Into<Option<options::FindOneOptions>> + Send,
     {
-        Ok(Self::collection(db)
-            .find_one(filter, options)
-            .await?
-            .map(Self::instance_from_document)
-            .transpose()?)
+        Ok(Self::collection(db).find_one(filter, options).await?)
     }
 
     /// Finds a single document and deletes it, returning the original.
@@ -117,23 +113,17 @@ where
     where
         O: Into<Option<options::FindOneAndDeleteOptions>> + Send,
     {
-        Ok(Self::collection(db)
-            .find_one_and_delete(filter, options)
-            .await?
-            .map(Self::instance_from_document)
-            .transpose()?)
+        Ok(Self::collection(db).find_one_and_delete(filter, options).await?)
     }
 
     /// Finds a single document and replaces it, returning either the original or replaced document.
-    async fn find_one_and_replace<O>(db: &Database, filter: Document, replacement: Document, options: O) -> Result<Option<Self>>
+    async fn find_one_and_replace<O>(db: &Database, filter: Document, replacement: &Self, options: O) -> Result<Option<Self>>
     where
         O: Into<Option<options::FindOneAndReplaceOptions>> + Send,
     {
         Ok(Self::collection(db)
             .find_one_and_replace(filter, replacement, options)
-            .await?
-            .map(Self::instance_from_document)
-            .transpose()?)
+            .await?)
     }
 
     /// Finds a single document and updates it, returning either the original or updated document.
@@ -142,11 +132,7 @@ where
         U: Into<options::UpdateModifications> + Send,
         O: Into<Option<options::FindOneAndUpdateOptions>> + Send,
     {
-        Ok(Self::collection(db)
-            .find_one_and_update(filter, update, options)
-            .await?
-            .map(Self::instance_from_document)
-            .transpose()?)
+        Ok(Self::collection(db).find_one_and_update(filter, update, options).await?)
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,7 +155,6 @@ where
     /// write concern.
     async fn save(&mut self, db: &Database, filter: Option<Document>) -> Result<()> {
         let coll = Self::collection(db);
-        let instance_doc = Self::document_from_instance(&self)?;
 
         // Ensure that journaling is set to true for this call, as we need to be able to get an ID back.
         let mut write_concern = Self::write_concern().unwrap_or_default();
@@ -197,13 +182,16 @@ where
             .return_document(Some(options::ReturnDocument::After))
             .build();
         let updated_doc = coll
-            .find_one_and_replace(filter, instance_doc, Some(opts))
+            .find_one_and_replace(filter, &(*self), Some(opts))
             .await?
             .ok_or(WitherError::ServerFailedToReturnUpdatedDoc)?;
+        let updated_doc = Self::document_from_instance(&updated_doc)?;
 
         // Update instance ID if needed.
         if id_needs_update {
-            let response_id = updated_doc.get_str("_id").map_err(|_| WitherError::ServerFailedToReturn)?;
+            let response_id = updated_doc
+                .get_str("_id")
+                .map_err(|_| WitherError::ServerFailedToReturn)?;
             self.set_id(response_id.to_string());
         };
         Ok(())
@@ -266,8 +254,6 @@ where
         Ok(Self::collection(db)
             .find_one_and_update(filter, update, Some(options))
             .await?
-            .map(Self::instance_from_document)
-            .transpose()?
             .ok_or(WitherError::ServerFailedToReturnUpdatedDoc)?)
     }
 
@@ -323,7 +309,7 @@ where
     /// defined in this model's `indexes` method.
     async fn sync(db: &Database) -> Result<()> {
         let coll = Self::collection(db);
-        let current_indexes = get_current_indexes(&db, &coll).await?;
+        let current_indexes = get_current_indexes(db, &coll).await?;
         sync_model_indexes(db, &coll, Self::indexes(), current_indexes).await?;
         Ok(())
     }
@@ -336,12 +322,12 @@ where
 }
 
 /// Get current collection indexes, if any.
-async fn get_current_indexes(db: &Database, coll: &Collection) -> Result<HashMap<String, IndexModel>> {
+async fn get_current_indexes<T>(db: &Database, coll: &Collection<T>) -> Result<HashMap<String, IndexModel>> {
     let list_indexes = match db.run_command(doc! {"listIndexes": coll.name()}, None).await {
         Ok(list_indexes) => list_indexes,
         Err(err) => match err.kind.as_ref() {
             // The DB & or collection does not yet exist. Move on.
-            mongodb::error::ErrorKind::CommandError(err) if err.code == 26 => doc! {},
+            mongodb::error::ErrorKind::Command(err) if err.code == 26 => doc! {},
             _ => return Err(err.into()),
         },
     };
@@ -380,7 +366,8 @@ fn build_index_map(list_index: Document) -> HashMap<String, IndexModel> {
         None => return Default::default(),
     };
     // https://docs.mongodb.com/manual/reference/limits/#Number-of-Indexes-per-Collection
-    // We have a maximum of 64 indexes per collection, the firstBatch contains them all based on our tests.
+    // We have a maximum of 64 indexes per collection, the firstBatch contains them all based on our
+    // tests.
     let first_batch = match doc.get_array("firstBatch").ok() {
         Some(first_batch) => first_batch,
         None => return Default::default(),
@@ -421,8 +408,8 @@ fn build_index_map(list_index: Document) -> HashMap<String, IndexModel> {
     index_map
 }
 
-async fn sync_model_indexes<'a>(
-    db: &'a Database, coll: &'a Collection, model_indexes: Vec<IndexModel>, current_indexes_map: HashMap<String, IndexModel>,
+async fn sync_model_indexes<'a, T>(
+    db: &'a Database, coll: &'a Collection<T>, model_indexes: Vec<IndexModel>, current_indexes_map: HashMap<String, IndexModel>,
 ) -> Result<()> {
     log::info!("Synchronizing indexes for '{}'.", coll.namespace());
 
